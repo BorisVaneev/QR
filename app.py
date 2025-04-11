@@ -1,7 +1,16 @@
 import qrcode
-import os  # Добавляем эту строку
+from flask import Flask, send_file, request
+import os
+import io
 
-def generate_qrcode(text):
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    # Получаем текст из параметра URL (?text=Привет) или переменной окружения
+    text = request.args.get('text', os.getenv("QR_TEXT", "default_text"))
+    
+    # Генерируем QR-код в памяти (без сохранения в файл)
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -11,8 +20,14 @@ def generate_qrcode(text):
     qr.add_data(text)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save("qrimg.png")
+    
+    # Сохраняем изображение в байтовый поток
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    # Отправляем изображение как файл
+    return send_file(img_bytes, mimetype='image/png')
 
-# Исправленная строка:
-url = os.getenv("NAME", "default_user")  # Теперь правильно!
-generate_qrcode(url)
+if __name__ == '__main__':
+    app.run()
