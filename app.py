@@ -12,5 +12,5 @@ def generate_qrcode(text):
     img=qr.make_image(fill_color="black",back_color="white")
     img.save("qrimg.png")
 
-url=os.getenv("NAME", "default_user") )
+url=os.getenv("NAME", "default_user") 
 generate_qrcode(url)
