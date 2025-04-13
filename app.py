@@ -1,6 +1,7 @@
-from flask import Flask, render_template_string, request, send_file
+from flask import Flask, render_template_string, request, send_file, jsonify
 import qrcode
 import io
+import base64
 
 app = Flask(__name__)
 
@@ -25,37 +26,22 @@ HTML_TEMPLATE = """
 </html>
 """
 
+# Главная страница — HTML генератор
 @app.route('/', methods=['GET', 'POST'])
 def home():
     img_url = None
-    
+
     if request.method == 'POST':
         text = request.form['text']
-        
-        # Генерация QR-кода
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(text)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Сохранение в память
-        img_bytes = io.BytesIO()
-        img.save(img_bytes, format='PNG')
-        img_bytes.seek(0)
         img_url = f"/qr_image?text={text}"
-    
+
     return render_template_string(HTML_TEMPLATE, img_url=img_url)
 
+# Изображение QR-кода по тексту (для отображения и скачивания)
 @app.route('/qr_image')
 def qr_image():
     text = request.args.get('text', '')
-    
-    # Повторная генерация для скачивания
+
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -65,12 +51,44 @@ def qr_image():
     qr.add_data(text)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
-    
+
     img_bytes = io.BytesIO()
     img.save(img_bytes, format='PNG')
     img_bytes.seek(0)
-    
+
     return send_file(img_bytes, mimetype='image/png')
 
+# API для RapidAPI — возвращает base64 QR-кода
+@app.route('/api/qrcode', methods=['POST'])
+def api_qrcode():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'Missing "text" field'}), 400
+
+    text = data['text']
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+
+    # Преобразование в base64
+    img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
+
+    return jsonify({
+        'text': text,
+        'image_base64': img_base64,
+        'content_type': 'image/png'
+    })
+
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
