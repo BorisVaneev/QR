@@ -67,6 +67,16 @@ def qr_image():
     img_bytes.seek(0)
     return send_file(img_bytes, mimetype='image/png')
 
+@app.route('/monocle', methods=['GET', 'POST'])
+def monocle():
+    img_url = None
+    if request.method == 'POST':
+        text = request.form['text']
+        color = request.form.get('color', 'black')
+        menu_image_url = 'https://i.imgur.com/xyz123.jpg'  # пример
+        img_url = f"/qr_image?text={menu_image_url}&color={color}"
+    return render_template('monocle.html', img_url=img_url)
+
 # RapidAPI функция — остаётся!
 @app.route('/api/qrcode', methods=['POST'])
 def api_qrcode():
