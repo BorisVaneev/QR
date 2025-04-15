@@ -10,9 +10,9 @@ app = Flask(__name__)
 
 # Настройки Cloudinary (замени своими данными)
 cloudinary.config(
-    cloud_name="your_cloud_name",
-    api_key="your_api_key",
-    api_secret="your_api_secret"
+    cloud_name="Monocle",
+    api_key="925288137256823",
+    api_secret="YY9bjM3pPVUGs_jodnsHyoHZPOk"
 )
 
 @app.route('/')
