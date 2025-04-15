@@ -8,7 +8,7 @@ import base64
 app = Flask(__name__)
 
 # Вставь сюда свой Imgur Client ID
-IMGUR_CLIENT_ID = "твой_client_id"
+IMGUR_CLIENT_ID = "ff5c7d74ca974aa"
 
 # Главная страница — Генератор QR-кодов
 @app.route('/', methods=['GET', 'POST'])
