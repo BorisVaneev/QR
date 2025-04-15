@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Monocle — Генератор QR-кодов</title>
+    <title>Инструменты QR</title>
 </head>
 <body>
-    <h1>QR-код для изображения меню</h1>
+    <h1>QR-код с цветом</h1>
     <form method="POST">
+        <input type="text" name="text" placeholder="Введите текст" required><br><br>
+
         <label>Цвет:</label>
         <select name="color">
             <option value="black">Чёрный</option>
@@ -15,7 +17,7 @@
             <option value="purple">Фиолетовый</option>
         </select><br><br>
 
-        <button type="submit">Создать QR-код</button>
+        <button type="submit">Создать QR</button>
     </form>
 
     {% if img_url %}
@@ -27,6 +29,6 @@
 
     <br><br>
     <a href="/">← Назад на главную</a>
-    <a href="/tools">Перейти к инструментам</a>
+    <a href="/monocle">Перейти к Monocle — Генератор QR-кодов для изображения меню</a>
 </body>
 </html>
