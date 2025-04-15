@@ -37,37 +37,34 @@ def tools():
 @app.route('/monocle', methods=['GET', 'POST'])
 def monocle():
     img_url = None
-    qr_url = None
+    qr_url = None  # Убедитесь, что это переменная существует для возврата URL QR-кода
 
     if request.method == 'POST':
-        uploaded_file = request.files.get('image')
-        color = request.form.get('color', 'black')
-
-        if uploaded_file:
-            headers = {
-                'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'  # Используй правильный Client ID
-            }
-
-            # Создаём временный файл
-            files = {
-                'image': (uploaded_file.filename, uploaded_file.stream, uploaded_file.mimetype)
-            }
-
-            response = requests.post('https://api.imgur.com/3/upload', headers=headers, files=files)
-
-            if response.status_code == 200:
-                img_data = response.json()
-                img_url = img_data['data']['link']
-                qr_url = f"/qr_image?text={img_url}&color={color}"
-            else:
-                print("Imgur response:", response.text)  # Это для отладки
-                return "Ошибка при загрузке изображения на Imgur", 500
+        image = request.files.get('image')  # Получаем файл изображения
+        if image:
+            # Отправка изображения на Imgur
+            imgur_url = 'https://api.imgur.com/3/upload'
+            headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
+            files = {'image': image.read()}
+            data = {'image': files['image']}
+            
+            # Добавлен тайм-аут
+            try:
+                response = requests.post(imgur_url, headers=headers, data=data, timeout=30)
+                
+                if response.status_code == 200:
+                    img_data = response.json()
+                    img_url = img_data['data']['link']
+                    # Генерация QR-кода с ссылкой на изображение
+                    qr_url = f"/qr_image?text={img_url}"
+                else:
+                    return "Ошибка при загрузке изображения на Imgur", 500
+            except requests.exceptions.RequestException as e:
+                return f"Произошла ошибка при запросе к Imgur: {e}", 500
         else:
-            return "Пожалуйста, выберите файл", 400
+            return "Пожалуйста, выберите изображение", 400
 
     return render_template('monocle.html', img_url=qr_url)
-
-
 # Генерация QR-изображения по ссылке или тексту
 @app.route('/qr_image')
 def qr_image():
