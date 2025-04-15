@@ -44,24 +44,21 @@ def monocle():
         color = request.form.get('color', 'black')
 
         if image:
-            # Подключение к Imgur API
-            imgur_url = 'https://api.imgur.com/3/upload'
             headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
-            files = {'image': image.read()}  # Считываем изображение
-
-            # Отправляем запрос на загрузку изображения
-            response = requests.post(imgur_url, headers=headers, files={'image': files['image']})
+            files = {'image': image.read()}
+            response = requests.post('https://api.imgur.com/3/upload', headers=headers, files=files)
 
             if response.status_code == 200:
                 img_data = response.json()
                 img_url = img_data['data']['link']
                 qr_url = f"/qr_image?text={img_url}&color={color}"
             else:
-                return f"Ошибка при загрузке изображения на Imgur: {response.text}", 500
+                return "Ошибка при загрузке изображения на Imgur", 500
         else:
-            return "Пожалуйста, выберите изображение", 400
+            return "Пожалуйста, выберите файл", 400
 
     return render_template('monocle.html', img_url=qr_url)
+
 
 # Генерация QR-изображения по ссылке или тексту
 @app.route('/qr_image')
