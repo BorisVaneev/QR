@@ -4,11 +4,13 @@
     <title>QR для меню</title>
 </head>
 <body>
-    <h1>QR-код с цветом</h1>
-    <form method="POST">
-        <input type="text" name="text" placeholder="Введите текст" required><br><br>
+    <h1>QR-код для изображения меню</h1>
 
-        <label>Цвет:</label>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Загрузите изображение (например, меню):</label><br>
+        <input type="file" name="image" accept="image/*" required><br><br>
+
+        <label>Цвет QR-кода:</label>
         <select name="color">
             <option value="black">Чёрный</option>
             <option value="red">Красный</option>
@@ -24,7 +26,7 @@
         <h2>Результат:</h2>
         <img src="{{ img_url }}" width="300">
         <br>
-        <a href="{{ img_url }}" download="qrcode.png">Скачать</a>
+        <a href="{{ img_url }}" download="qrcode.png">Скачать QR</a>
     {% endif %}
 
     <br><br>
