@@ -1,10 +1,14 @@
-import cloudinary
-import cloudinary.uploader
+import requests
 import os
 from flask import Flask, render_template, request, send_file, jsonify
 import qrcode
 import io
 import base64
+
+# Cloudinary
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 app = Flask(__name__)
 
