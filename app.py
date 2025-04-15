@@ -65,7 +65,8 @@ def qr_image():
     img_bytes.seek(0)
 
     return send_file(img_bytes, mimetype='image/png')
-    @app.route('/api/qrcode', methods=['POST'])
+
+@app.route('/api/qrcode', methods=['POST'])
 def api_qrcode():
     data = request.get_json()
     if not data or 'text' not in data:
@@ -95,6 +96,7 @@ def api_qrcode():
         'image_base64': img_base64,
         'content_type': 'image/png'
     })
+
 
 if __name__ == '__main__':
     app.run(debug=True)
