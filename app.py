@@ -38,23 +38,26 @@ def tools():
 def monocle():
     img_url = None
     qr_url = None
+
     if request.method == 'POST':
-        image = request.files.get('image')  # Получаем файл изображения
+        image = request.files.get('image')
+        color = request.form.get('color', 'black')
+
         if image:
-            # Отправка изображения на Imgur
+            # Подключение к Imgur API
             imgur_url = 'https://api.imgur.com/3/upload'
             headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
-            files = {'image': image.read()}
-            data = {'image': files['image']}
-            response = requests.post(imgur_url, headers=headers, data=data)
+            files = {'image': image.read()}  # Считываем изображение
+
+            # Отправляем запрос на загрузку изображения
+            response = requests.post(imgur_url, headers=headers, files={'image': files['image']})
 
             if response.status_code == 200:
                 img_data = response.json()
                 img_url = img_data['data']['link']
-                # Генерация QR-кода с ссылкой на изображение
-                qr_url = f"/qr_image?text={img_url}"
+                qr_url = f"/qr_image?text={img_url}&color={color}"
             else:
-                return "Ошибка при загрузке изображения на Imgur", 500
+                return f"Ошибка при загрузке изображения на Imgur: {response.text}", 500
         else:
             return "Пожалуйста, выберите изображение", 400
 
