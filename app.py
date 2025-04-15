@@ -1,11 +1,11 @@
-from flask import Flask, render_template_string, request, send_file, jsonify
+from flask import Flask, render_template, render_template_string, request, send_file, jsonify
 import qrcode
 import io
 import base64
 
 app = Flask(__name__)
 
-# HTML-шаблон с формой
+# Главная страница — HTML генератор
 HTML_TEMPLATE = """
 <!doctype html>
 <html>
@@ -22,11 +22,12 @@ HTML_TEMPLATE = """
     <br>
     <a href="{{ img_url }}" download="qrcode.png">Скачать</a>
   {% endif %}
+  <br>
+  <a href="/tools">Перейти к инструментам</a>
 </body>
 </html>
 """
 
-# Главная страница — HTML генератор
 @app.route('/', methods=['GET', 'POST'])
 def home():
     img_url = None
@@ -37,7 +38,12 @@ def home():
 
     return render_template_string(HTML_TEMPLATE, img_url=img_url)
 
-# Изображение QR-кода по тексту (для отображения и скачивания)
+# Вторая страница — /tools
+@app.route('/tools')
+def tools():
+    return render_template('tools.html')
+
+# Генерация QR-изображения
 @app.route('/qr_image')
 def qr_image():
     text = request.args.get('text', '')
@@ -58,7 +64,7 @@ def qr_image():
 
     return send_file(img_bytes, mimetype='image/png')
 
-# API для RapidAPI — возвращает base64 QR-кода
+# API для RapidAPI
 @app.route('/api/qrcode', methods=['POST'])
 def api_qrcode():
     data = request.get_json()
@@ -81,7 +87,6 @@ def api_qrcode():
     img.save(img_bytes, format='PNG')
     img_bytes.seek(0)
 
-    # Преобразование в base64
     img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
 
     return jsonify({
