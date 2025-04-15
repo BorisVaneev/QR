@@ -10,9 +10,9 @@ app = Flask(__name__)
 
 # Конфигурация Cloudinary
 cloudinary.config(
-    cloud_name="your_cloud_name",  # Ваш Cloud Name
-    api_key="your_api_key",  # Ваш API Key
-    api_secret="your_api_secret",  # Ваш API Secret
+    cloud_name="Monocle",  # Ваш Cloud Name
+    api_key="925288137256823",  # Ваш API Key
+    api_secret="YY9bjM3pPVUGs_jodnsHyoHZPOk",  # Ваш API Secret
 )
 
 # Главная страница — Генератор QR-кодов
