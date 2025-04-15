@@ -4,10 +4,10 @@
     <title>QR для меню</title>
 </head>
 <body>
-    <h1>QR-код для изображения меню</h1>
+    <h1>Генератор QR-кода для изображения меню</h1>
 
     <form method="POST" enctype="multipart/form-data">
-        <label>Загрузите изображение (например, меню):</label><br>
+        <label>Загрузите изображение меню (JPG, PNG):</label><br>
         <input type="file" name="image" accept="image/*" required><br><br>
 
         <label>Цвет QR-кода:</label>
@@ -19,14 +19,13 @@
             <option value="purple">Фиолетовый</option>
         </select><br><br>
 
-        <button type="submit">Создать QR</button>
+        <button type="submit">Создать QR-код</button>
     </form>
 
     {% if img_url %}
-        <h2>Результат:</h2>
-        <img src="{{ img_url }}" width="300">
-        <br>
-        <a href="{{ img_url }}" download="qrcode.png">Скачать QR</a>
+        <h2>QR-код к изображению меню:</h2>
+        <img src="{{ img_url }}" width="300"><br>
+        <a href="{{ img_url }}" download="menu_qrcode.png">Скачать QR</a><br><br>
     {% endif %}
 
     <br><br>
