@@ -24,6 +24,7 @@ HTML_TEMPLATE = """
   {% endif %}
   <br>
   <a href="/tools">Перейти к инструментам</a>
+  <a href="/monocle">Перейти к Monocle — Генератор QR-кодов для изображения меню</a>
 </body>
 </html>
 """
