@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Генератор QR-кодов</title>
+</head>
+<body>
+    <h1>Создать QR-код</h1>
+    <form method="POST">
+        <input type="text" name="text" placeholder="Введите текст" required>
+        <button type="submit">Сгенерировать</button>
+    </form>
+
+    {% if img_url %}
+        <h2>Ваш QR-код:</h2>
+        <img src="{{ img_url }}" width="300">
+        <br>
+        <a href="{{ img_url }}" download="qrcode.png">Скачать</a>
+    {% endif %}
+
+    <br><br>
+    <a href="/tools">Перейти к инструментам</a>
+    <br><br>
+    <a href="/monocle">Перейти к Monocle — Генератор QR-кодов для изображения меню</a>
+</body>
+</html>
