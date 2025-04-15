@@ -53,10 +53,17 @@ def qr_image():
     color = request.args.get('color', 'black')
     size = int(request.args.get('size', 10))  # Преобразуем размер в число
 
+    # Определим минимальную версию QR в зависимости от размера
+    version = 1
+    if size >= 15:
+        version = 2
+    elif size >= 20:
+        version = 3
+
     qr = qrcode.QRCode(
-        version=1,
+        version=version,  # Используем версию для определения размера
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=size,  # Применяем значение размера
+        box_size=size,  # Размер клетки
         border=4,
     )
     qr.add_data(text)
@@ -67,7 +74,6 @@ def qr_image():
     img.save(img_bytes, format='PNG')
     img_bytes.seek(0)
     return send_file(img_bytes, mimetype='image/png')
-
 # RapidAPI функция — остаётся!
 @app.route('/api/qrcode', methods=['POST'])
 def api_qrcode():
