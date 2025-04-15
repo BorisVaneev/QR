@@ -23,7 +23,7 @@ HTML_TEMPLATE = """
     <a href="{{ img_url }}" download="qrcode.png">Скачать</a>
   {% endif %}
   <br>
-  <a href="/tools">Перейти к инструментам</a>
+  <a href="/tools">Перейти к инструментам</a><br>
   <a href="/monocle">Перейти к Monocle — Генератор QR-кодов для изображения меню</a>
 </body>
 </html>
