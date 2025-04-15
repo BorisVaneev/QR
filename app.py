@@ -5,7 +5,7 @@ import base64
 
 app = Flask(__name__)
 
-# Главная страница — HTML генератор
+# Главная страница — обычный QR генератор
 HTML_TEMPLATE = """
 <!doctype html>
 <html>
@@ -31,40 +31,45 @@ HTML_TEMPLATE = """
 @app.route('/', methods=['GET', 'POST'])
 def home():
     img_url = None
-
     if request.method == 'POST':
         text = request.form['text']
         img_url = f"/qr_image?text={text}"
-
     return render_template_string(HTML_TEMPLATE, img_url=img_url)
 
-# Вторая страница — /tools
-@app.route('/tools')
+# Страница /tools с выбором цвета и размера
+@app.route('/tools', methods=['GET', 'POST'])
 def tools():
-    return render_template('tools.html')
+    img_url = None
+    if request.method == 'POST':
+        text = request.form['text']
+        color = request.form.get('color', 'black')
+        size = request.form.get('size', '10')
+        img_url = f"/qr_image?text={text}&color={color}&size={size}"
+    return render_template('tools.html', img_url=img_url)
 
-# Генерация QR-изображения
+# Генерация QR-изображения с учётом цвета и размера
 @app.route('/qr_image')
 def qr_image():
     text = request.args.get('text', '')
+    color = request.args.get('color', 'black')
+    size = int(request.args.get('size', 10))
 
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
+        box_size=size,
         border=4,
     )
     qr.add_data(text)
     qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qr.make_image(fill_color=color, back_color="white")
 
     img_bytes = io.BytesIO()
     img.save(img_bytes, format='PNG')
     img_bytes.seek(0)
-
     return send_file(img_bytes, mimetype='image/png')
 
-# API для RapidAPI
+# RapidAPI функция — остаётся!
 @app.route('/api/qrcode', methods=['POST'])
 def api_qrcode():
     data = request.get_json()
@@ -72,7 +77,6 @@ def api_qrcode():
         return jsonify({'error': 'Missing "text" field'}), 400
 
     text = data['text']
-
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -86,7 +90,6 @@ def api_qrcode():
     img_bytes = io.BytesIO()
     img.save(img_bytes, format='PNG')
     img_bytes.seek(0)
-
     img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
 
     return jsonify({
