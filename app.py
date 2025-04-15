@@ -42,31 +42,24 @@ def tools():
     img_url = None
     if request.method == 'POST':
         text = request.form['text']
-        color = request.form.get('color', 'black')
-        size = int(request.form.get('size', '10'))  # Преобразуем размер в число
-        img_url = f"/qr_image?text={text}&color={color}&size={size}"
+        color = request.form.get('color', 'black')  # Получаем выбранный цвет
+        img_url = f"/qr_image?text={text}&color={color}"
     return render_template('tools.html', img_url=img_url)
 
 @app.route('/qr_image')
 def qr_image():
     text = request.args.get('text', '')
-    color = request.args.get('color', 'black')
-    size = int(request.args.get('size', 10))  # Преобразуем размер в число
+    color = request.args.get('color', 'black')  # Получаем цвет
 
-    # Определяем размер изображения и параметры версии QR
     qr = qrcode.QRCode(
-        version=1,  # Минимальная версия QR-кода (для текста, который мы вводим)
+        version=1,  # Минимальная версия для простого QR-кода
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,  # Минимальная величина клетки
-        border=4,
+        box_size=10,  # Размер клетки QR
+        border=4,  # Ширина границы
     )
     qr.add_data(text)
     qr.make(fit=True)
-    img = qr.make_image(fill_color=color, back_color="white")
-
-    # Масштабируем изображение в зависимости от выбранного размера
-    width, height = img.size
-    img = img.resize((width * size, height * size))  # Масштабируем изображение
+    img = qr.make_image(fill_color=color, back_color="white")  # Применяем выбранный цвет
 
     img_bytes = io.BytesIO()
     img.save(img_bytes, format='PNG')
