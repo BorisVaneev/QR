@@ -97,6 +97,5 @@ def api_qrcode():
         'content_type': 'image/png'
     })
 
-
 if __name__ == '__main__':
     app.run(debug=True)
