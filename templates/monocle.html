@@ -4,27 +4,21 @@
     <title>QR для меню</title>
 </head>
 <body>
-    <h1>Генерация QR-кода для изображения или PDF</h1>
+    <h1>QR-код для меню</h1>
+
     <form method="POST" enctype="multipart/form-data">
-        <label>Загрузите изображение или PDF-файл:</label><br>
-        <input type="file" name="image" accept="image/*,.pdf" required><br><br>
+        <label>Выберите изображение (меню):</label><br><br>
+        <input type="file" name="image" accept="image/*,application/pdf" required><br><br>
 
-        <label>Цвет QR-кода:</label>
-        <select name="color">
-            <option value="black">Чёрный</option>
-            <option value="red">Красный</option>
-            <option value="blue">Синий</option>
-            <option value="green">Зелёный</option>
-            <option value="purple">Фиолетовый</option>
-        </select><br><br>
-
-        <button type="submit">Создать QR</button>
+        <button type="submit">Загрузить на Cloudinary и создать QR-код</button>
     </form>
 
     {% if img_url %}
         <h2>Результат:</h2>
-        <img src="{{ img_url }}" width="300"><br>
-        <a href="{{ img_url }}" download="qrcode.png">Скачать QR</a>
+        <img src="{{ img_url }}" width="300">
+        <br>
+        <a href="{{ img_url }}" target="_blank">Открыть изображение на Cloudinary</a><br>
+        <a href="{{ img_url }}" download="menu_image">Скачать изображение</a>
     {% endif %}
 
     <br><br>
