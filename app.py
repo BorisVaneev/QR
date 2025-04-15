@@ -37,12 +37,13 @@ def tools():
 @app.route('/monocle', methods=['GET', 'POST'])
 def monocle():
     img_url = None
+    qr_url = None
     if request.method == 'POST':
         image = request.files.get('image')  # Получаем файл изображения
         if image:
             # Отправка изображения на Imgur
             imgur_url = 'https://api.imgur.com/3/upload'
-            headers = {'Authorization': f'Client-ID {ff5c7d74ca974aa}'}
+            headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
             files = {'image': image.read()}
             data = {'image': files['image']}
             response = requests.post(imgur_url, headers=headers, data=data)
