@@ -42,7 +42,7 @@ def monocle():
         if image:
             # Отправка изображения на Imgur
             imgur_url = 'https://api.imgur.com/3/upload'
-            headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
+            headers = {'Authorization': f'Client-ID {ff5c7d74ca974aa}'}
             files = {'image': image.read()}
             data = {'image': files['image']}
             response = requests.post(imgur_url, headers=headers, data=data)
