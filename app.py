@@ -43,21 +43,20 @@ def tools():
     if request.method == 'POST':
         text = request.form['text']
         color = request.form.get('color', 'black')
-        size = request.form.get('size', '10')
+        size = int(request.form.get('size', '10'))  # Преобразуем размер в число
         img_url = f"/qr_image?text={text}&color={color}&size={size}"
     return render_template('tools.html', img_url=img_url)
 
-# Генерация QR-изображения с учётом цвета и размера
 @app.route('/qr_image')
 def qr_image():
     text = request.args.get('text', '')
     color = request.args.get('color', 'black')
-    size = int(request.args.get('size', 10))
+    size = int(request.args.get('size', 10))  # Преобразуем размер в число
 
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=size,
+        box_size=size,  # Применяем значение размера
         border=4,
     )
     qr.add_data(text)
