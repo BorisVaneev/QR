@@ -65,6 +65,36 @@ def qr_image():
     img_bytes.seek(0)
 
     return send_file(img_bytes, mimetype='image/png')
+    @app.route('/api/qrcode', methods=['POST'])
+def api_qrcode():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'Missing "text" field'}), 400
+
+    text = data['text']
+    color = data.get('color', 'black')
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=color, back_color="white")
+
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+
+    img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
+
+    return jsonify({
+        'text': text,
+        'image_base64': img_base64,
+        'content_type': 'image/png'
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
