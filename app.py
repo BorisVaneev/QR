@@ -1,4 +1,5 @@
-import requests
+import cloudinary
+import cloudinary.uploader
 import os
 from flask import Flask, render_template, request, send_file, jsonify
 import qrcode
@@ -7,8 +8,12 @@ import base64
 
 app = Flask(__name__)
 
-# Вставь сюда свой Imgur Client ID
-IMGUR_CLIENT_ID = "ff5c7d74ca974aa"
+# Конфигурация Cloudinary
+cloudinary.config(
+    cloud_name="your_cloud_name",  # Ваш Cloud Name
+    api_key="your_api_key",  # Ваш API Key
+    api_secret="your_api_secret",  # Ваш API Secret
+)
 
 # Главная страница — Генератор QR-кодов
 @app.route('/', methods=['GET', 'POST'])
@@ -37,34 +42,22 @@ def tools():
 @app.route('/monocle', methods=['GET', 'POST'])
 def monocle():
     img_url = None
-    qr_url = None  # Убедитесь, что это переменная существует для возврата URL QR-кода
-
     if request.method == 'POST':
         image = request.files.get('image')  # Получаем файл изображения
         if image:
-            # Отправка изображения на Imgur
-            imgur_url = 'https://api.imgur.com/3/upload'
-            headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
-            files = {'image': image.read()}
-            data = {'image': files['image']}
-            
-            # Добавлен тайм-аут
+            # Отправка изображения на Cloudinary
             try:
-                response = requests.post(imgur_url, headers=headers, data=data, timeout=30)
-                
-                if response.status_code == 200:
-                    img_data = response.json()
-                    img_url = img_data['data']['link']
-                    # Генерация QR-кода с ссылкой на изображение
-                    qr_url = f"/qr_image?text={img_url}"
-                else:
-                    return "Ошибка при загрузке изображения на Imgur", 500
-            except requests.exceptions.RequestException as e:
-                return f"Произошла ошибка при запросе к Imgur: {e}", 500
+                response = cloudinary.uploader.upload(image)
+                img_url = response['url']  # Получаем URL изображения на Cloudinary
+                # Генерация QR-кода с ссылкой на изображение
+                qr_url = f"/qr_image?text={img_url}"
+            except Exception as e:
+                return f"Ошибка при загрузке изображения на Cloudinary: {str(e)}", 500
         else:
             return "Пожалуйста, выберите изображение", 400
 
     return render_template('monocle.html', img_url=qr_url)
+
 # Генерация QR-изображения по ссылке или тексту
 @app.route('/qr_image')
 def qr_image():
