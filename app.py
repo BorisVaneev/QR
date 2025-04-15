@@ -40,12 +40,19 @@ def monocle():
     qr_url = None
 
     if request.method == 'POST':
-        image = request.files.get('image')
+        uploaded_file = request.files.get('image')
         color = request.form.get('color', 'black')
 
-        if image:
-            headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
-            files = {'image': image.read()}
+        if uploaded_file:
+            headers = {
+                'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'  # Используй правильный Client ID
+            }
+
+            # Создаём временный файл
+            files = {
+                'image': (uploaded_file.filename, uploaded_file.stream, uploaded_file.mimetype)
+            }
+
             response = requests.post('https://api.imgur.com/3/upload', headers=headers, files=files)
 
             if response.status_code == 200:
@@ -53,6 +60,7 @@ def monocle():
                 img_url = img_data['data']['link']
                 qr_url = f"/qr_image?text={img_url}&color={color}"
             else:
+                print("Imgur response:", response.text)  # Это для отладки
                 return "Ошибка при загрузке изображения на Imgur", 500
         else:
             return "Пожалуйста, выберите файл", 400
